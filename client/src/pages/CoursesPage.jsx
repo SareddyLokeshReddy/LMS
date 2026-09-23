@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { apiRequest } from '../services/api.js';
 import CourseCard from '../components/CourseCard.jsx';
@@ -10,7 +9,6 @@ export default function CoursesPage({ token, onMessage, onSignIn }) {
   const [selected, setSelected] = useState(undefined);
   const [busy, setBusy] = useState(false);
 
-  // Get all courses
   async function loadCourses() {
     try {
       const data = await apiRequest(
@@ -26,19 +24,15 @@ export default function CoursesPage({ token, onMessage, onSignIn }) {
           ? data
           : data.courses || []
       );
-
     } catch (error) {
       onMessage(error.message);
     }
   }
 
-  // Load courses when token changes
   useEffect(() => {
     loadCourses();
   }, [token]);
 
-
-  // Create or update course
   async function saveCourse(values) {
     if (!token) {
       setSelected(undefined);
@@ -79,8 +73,6 @@ export default function CoursesPage({ token, onMessage, onSignIn }) {
     }
   }
 
-
-  // Delete course
   async function deleteCourse(id) {
     if (!token) {
       onMessage('Please sign in to manage courses.');
@@ -110,21 +102,17 @@ export default function CoursesPage({ token, onMessage, onSignIn }) {
     }
   }
 
-
-  // Search courses
   const filtered = courses.filter((course) =>
-    `${course.title || ''} 
-     ${course.description || ''} 
-     ${course.category || ''} 
+    `${course.title || ''}
+     ${course.description || ''}
+     ${course.category || ''}
      ${course.instructor || ''}`
       .toLowerCase()
       .includes(query.toLowerCase())
   );
 
-
   return (
     <>
-      {/* Hero Section */}
       <section className="hero">
         <div>
           <span className="eyebrow">
@@ -172,8 +160,6 @@ export default function CoursesPage({ token, onMessage, onSignIn }) {
         </div>
       </section>
 
-
-      {/* Course Library */}
       <section
         className="section"
         id="course-library"
@@ -203,9 +189,8 @@ export default function CoursesPage({ token, onMessage, onSignIn }) {
 
         </div>
 
-
-        {/* Search */}
         <div className="toolbar">
+
           <input
             className="search"
             value={query}
@@ -218,10 +203,9 @@ export default function CoursesPage({ token, onMessage, onSignIn }) {
           <span>
             {filtered.length} courses
           </span>
+
         </div>
 
-
-        {/* Courses */}
         {filtered.length ? (
 
           <div className="course-grid">
@@ -269,8 +253,6 @@ export default function CoursesPage({ token, onMessage, onSignIn }) {
 
       </section>
 
-
-      {/* Course Form */}
       {selected !== undefined && (
 
         <CourseForm
@@ -281,44 +263,6 @@ export default function CoursesPage({ token, onMessage, onSignIn }) {
         />
 
       )}
-
     </>
   );
 }
-
-app.use("/api/auth", authRoute);
-app.use("/api/courses", courseRoute);
-
-
-
-
-
-courseRoute.get("/", protect, getCourse);
-
-courseRoute.post(
-    "/",
-    protect,
-    authorize("instructor", "admin"),
-    createCourse
-);
-
-courseRoute.get("/:id", protect, getCourseById);
-
-courseRoute.put(
-    "/:id",
-    protect,
-    authorize("instructor", "admin"),
-    updateCourse
-);
-
-courseRoute.delete(
-    "/:id",
-    protect,
-    authorize("instructor", "admin"),
-    deleteCourse
-);
-
-
-
-
-
